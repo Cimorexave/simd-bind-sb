@@ -1,5 +1,5 @@
 import numpy as np
-from numba import jit, prange
+from numba import njit, prange
 import time
 
 # create two large arrays of double with the size of 1 million
