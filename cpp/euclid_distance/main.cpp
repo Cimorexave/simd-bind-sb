@@ -4,6 +4,7 @@
 #include <random>
 #include <cmath>
 #include <iomanip>
+#include <omp.h>
 
 #include "simd_ops.h"
 
@@ -76,26 +77,46 @@ int main() {
     std::cout << "Squared Euclidean Distance Benchmark\n";
     std::cout << "Array size: " << N << " elements\n";
     std::cout << "Iterations: " << ITERATIONS << "\n";
-    std::cout << std::string(65, '-') << "\n";
+    std::cout << "OpenMP threads: " << omp_get_max_threads() << "\n";
+    std::cout << std::string(75, '-') << "\n";
 
     // Verify correctness
     double expected = scalar_squared_euclidean_distance(a, b, N);
-    double actual   = simd_squared_euclidean_distance(a, b, N);
-    double diff     = std::abs(expected - actual);
+    double simd     = simd_squared_euclidean_distance(a, b, N);
+    double omp_simd = multithread_simd_squared_euclidean_distance(a, b, N);
+    double eigen    = eigen_squared_euclidean_distance(a, b, N);
 
     std::cout << "\nCorrectness check:\n";
-    std::cout << "  Scalar result: " << expected << "\n";
-    std::cout << "  SIMD   result: " << actual   << "\n";
-    std::cout << "  Difference:    " << diff     << "\n\n";
+    std::cout << "  Scalar result:           " << expected << "\n";
+    std::cout << "  SIMD result:             " << simd     << "\n";
+    std::cout << "  OpenMP+SIMD result:      " << omp_simd << "\n";
+    std::cout << "  Eigen result:            " << eigen    << "\n";
+    std::cout << "  Scalar vs SIMD diff:     " << std::abs(expected - simd)      << "\n";
+    std::cout << "  Scalar vs OMP+SIMD diff: " << std::abs(expected - omp_simd)  << "\n";
+    std::cout << "  Scalar vs Eigen diff:    " << std::abs(expected - eigen)     << "\n\n";
 
     // Benchmark
     double scalar_us = benchmark("Scalar", scalar_squared_euclidean_distance, a, b, N, ITERATIONS);
     double simd_us   = benchmark("SIMD (AVX2)", simd_squared_euclidean_distance, a, b, N, ITERATIONS);
+    double omp_us    = benchmark("OpenMP+SIMD", multithread_simd_squared_euclidean_distance, a, b, N, ITERATIONS);
+    double eigen_us  = benchmark("Eigen", eigen_squared_euclidean_distance, a, b, N, ITERATIONS);
 
-    std::cout << std::string(65, '-') << "\n";
+    std::cout << std::string(75, '-') << "\n";
     if (simd_us > 0.0) {
-        std::cout << "Speedup: " << std::fixed << std::setprecision(2)
+        std::cout << "Speedup (SIMD vs Scalar):        " << std::fixed << std::setprecision(2)
                   << (scalar_us / simd_us) << "x\n";
+    }
+    if (omp_us > 0.0) {
+        std::cout << "Speedup (OpenMP+SIMD vs Scalar):  " << std::fixed << std::setprecision(2)
+                  << (scalar_us / omp_us) << "x\n";
+        std::cout << "Speedup (OpenMP+SIMD vs SIMD):    " << std::fixed << std::setprecision(2)
+                  << (simd_us / omp_us) << "x\n";
+    }
+    if (eigen_us > 0.0) {
+        std::cout << "Speedup (Eigen vs Scalar):        " << std::fixed << std::setprecision(2)
+                  << (scalar_us / eigen_us) << "x\n";
+        std::cout << "Speedup (Eigen vs SIMD):          " << std::fixed << std::setprecision(2)
+                  << (simd_us / eigen_us) << "x\n";
     }
 
     _mm_free(a);
