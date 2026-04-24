@@ -17,7 +17,7 @@ def numba_euclidean_distance(a, b):
     return np.sqrt(sum)
 
 def np_euclidean_distance(a, b):
-    return np.linalg.norm(a - b)**2
+    return np.linalg.norm(a - b)
 
 def euclidean_distance(a, b):
     sum = 0.0
