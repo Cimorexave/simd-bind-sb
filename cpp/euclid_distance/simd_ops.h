@@ -14,4 +14,7 @@ double multithread_simd_squared_euclidean_distance(const double* a, const double
 // compute squared Euclidean distance using Eigen library
 double eigen_squared_euclidean_distance(const double* a, const double* b, std::size_t n);
 
+// compute squared Euclidean distance using Eigen + OpenMP (manual chunking)
+double eigen_omp_squared_euclidean_distance(const double* a, const double* b, std::size_t n);
+
 #endif // SIMD_OPS_H
