@@ -85,38 +85,44 @@ int main() {
     double simd     = simd_squared_euclidean_distance(a, b, N);
     double omp_simd = multithread_simd_squared_euclidean_distance(a, b, N);
     double eigen    = eigen_squared_euclidean_distance(a, b, N);
+    double eigen_omp= eigen_omp_squared_euclidean_distance(a, b, N);
 
     std::cout << "\nCorrectness check:\n";
-    std::cout << "  Scalar result:           " << expected << "\n";
-    std::cout << "  SIMD result:             " << simd     << "\n";
-    std::cout << "  OpenMP+SIMD result:      " << omp_simd << "\n";
-    std::cout << "  Eigen result:            " << eigen    << "\n";
-    std::cout << "  Scalar vs SIMD diff:     " << std::abs(expected - simd)      << "\n";
-    std::cout << "  Scalar vs OMP+SIMD diff: " << std::abs(expected - omp_simd)  << "\n";
-    std::cout << "  Scalar vs Eigen diff:    " << std::abs(expected - eigen)     << "\n\n";
+    std::cout << "  Scalar result:            " << expected << "\n";
+    std::cout << "  SIMD result:              " << simd     << "\n";
+    std::cout << "  OpenMP+SIMD result:       " << omp_simd << "\n";
+    std::cout << "  Eigen result:             " << eigen    << "\n";
+    std::cout << "  Eigen+OMP result:         " << eigen_omp<< "\n";
+    std::cout << "  Scalar vs SIMD diff:      " << std::abs(expected - simd)       << "\n";
+    std::cout << "  Scalar vs OMP+SIMD diff:  " << std::abs(expected - omp_simd)   << "\n";
+    std::cout << "  Scalar vs Eigen diff:     " << std::abs(expected - eigen)      << "\n";
+    std::cout << "  Scalar vs Eigen+OMP diff: " << std::abs(expected - eigen_omp)  << "\n\n";
 
     // Benchmark
-    double scalar_us = benchmark("Scalar", scalar_squared_euclidean_distance, a, b, N, ITERATIONS);
-    double simd_us   = benchmark("SIMD (AVX2)", simd_squared_euclidean_distance, a, b, N, ITERATIONS);
-    double omp_us    = benchmark("OpenMP+SIMD", multithread_simd_squared_euclidean_distance, a, b, N, ITERATIONS);
-    double eigen_us  = benchmark("Eigen", eigen_squared_euclidean_distance, a, b, N, ITERATIONS);
+    double scalar_us  = benchmark("Scalar", scalar_squared_euclidean_distance, a, b, N, ITERATIONS);
+    double simd_us    = benchmark("SIMD (AVX2)", simd_squared_euclidean_distance, a, b, N, ITERATIONS);
+    double omp_us     = benchmark("OpenMP+SIMD", multithread_simd_squared_euclidean_distance, a, b, N, ITERATIONS);
+    double eigen_us   = benchmark("Eigen", eigen_squared_euclidean_distance, a, b, N, ITERATIONS);
+    double eigen_omp_us = benchmark("Eigen+OMP", eigen_omp_squared_euclidean_distance, a, b, N, ITERATIONS);
 
     std::cout << std::string(75, '-') << "\n";
     if (simd_us > 0.0) {
-        std::cout << "Speedup (SIMD vs Scalar):        " << std::fixed << std::setprecision(2)
+        std::cout << "Speedup (SIMD vs Scalar):          " << std::fixed << std::setprecision(2)
                   << (scalar_us / simd_us) << "x\n";
     }
     if (omp_us > 0.0) {
-        std::cout << "Speedup (OpenMP+SIMD vs Scalar):  " << std::fixed << std::setprecision(2)
+        std::cout << "Speedup (OpenMP+SIMD vs Scalar):   " << std::fixed << std::setprecision(2)
                   << (scalar_us / omp_us) << "x\n";
-        std::cout << "Speedup (OpenMP+SIMD vs SIMD):    " << std::fixed << std::setprecision(2)
-                  << (simd_us / omp_us) << "x\n";
     }
     if (eigen_us > 0.0) {
-        std::cout << "Speedup (Eigen vs Scalar):        " << std::fixed << std::setprecision(2)
+        std::cout << "Speedup (Eigen vs Scalar):          " << std::fixed << std::setprecision(2)
                   << (scalar_us / eigen_us) << "x\n";
-        std::cout << "Speedup (Eigen vs SIMD):          " << std::fixed << std::setprecision(2)
-                  << (simd_us / eigen_us) << "x\n";
+    }
+    if (eigen_omp_us > 0.0) {
+        std::cout << "Speedup (Eigen+OMP vs Scalar):      " << std::fixed << std::setprecision(2)
+                  << (scalar_us / eigen_omp_us) << "x\n";
+        std::cout << "Speedup (Eigen+OMP vs Eigen):       " << std::fixed << std::setprecision(2)
+                  << (eigen_us / eigen_omp_us) << "x\n";
     }
 
     _mm_free(a);
