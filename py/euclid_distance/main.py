@@ -42,3 +42,8 @@ if __name__ == "__main__":
     dist_standard = euclidean_distance(a, b)
     end_time = time.time()
     print(f"Standard distance: {dist_standard:.6f}, Time taken: {end_time - start_time:.4f} seconds")
+
+    # check if all results are approximately equal
+    assert np.isclose(dist_numba, dist_numpy), "Numba and NumPy results differ!"
+    assert np.isclose(dist_numba, dist_standard), "Numba and standard results differ!"
+    print("All results are approximately equal.")
