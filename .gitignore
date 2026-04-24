@@ -1,0 +1,13 @@
+# executables
+*.exe
+*.dll
+*.so
+
+# build files
+/build/
+
+# logs
+/logs/
+
+# temporary files
+/tmp/
