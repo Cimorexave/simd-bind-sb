@@ -6,9 +6,8 @@
 cd cpp/euclid_distance
 
 # Compile with AVX2, FMA, OpenMP, Eigen (adjust Eigen include path for your system)
-g++ -std=c++17 -mavx2 -mfma -fopenmp -O2 \
-    -I C:/msys64/ucrt64/include/eigen3 \
-    -o bench.exe main.cpp simd_ops.cpp simd_omp.cpp eigen_ops.cpp eigen_omp.cpp
+g++ -std=c++17 -mavx2 -mfma -fopenmp -O2 -I C:/msys64/ucrt64/include/eigen3 -o bench.exe main.cpp simd_ops.cpp simd_omp.cpp eigen_ops.cpp eigen_omp.cpp
+
 
 # Run
 ./bench.exe
