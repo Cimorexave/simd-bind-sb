@@ -2,9 +2,13 @@
 *.exe
 *.dll
 *.so
+*.bat
 
 # build files
 /build/
+
+# bindings
+*.pyd
 
 # logs
 /logs/
