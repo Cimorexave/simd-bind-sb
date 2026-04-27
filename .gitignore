@@ -15,3 +15,8 @@
 
 # temporary files
 /tmp/
+
+# rust
+/target/
+/Cargo.lock
+.cargo/
